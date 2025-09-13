@@ -39,6 +39,10 @@ jobs:
           sudo apt-get install -y zip unzip jq
           pip install awscli
 
+      - name: Package Lambda ZIPs
+        run: |
+          chmod +x deploy.sh
+          ./deploy.sh package
       - name: Terraform Init
         if: ${{ github.event.inputs.action == 'deploy' }}
         env:

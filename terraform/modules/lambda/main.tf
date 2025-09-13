@@ -11,8 +11,7 @@ resource "aws_lambda_function" "mediaconvert_job" {
       AWS_ACCOUNT_ID    = ""
     }
   }
-  s3_bucket = var.s3_lambda_bucket
-  s3_key    = "lambda-packages/video-processor.zip"
+  filename      = "${path.module}/../../lambda-packages/video-processor.zip"
 }
 
 resource "aws_lambda_function" "video_stream" {
@@ -26,8 +25,7 @@ resource "aws_lambda_function" "video_stream" {
       CLOUDFRONT_DOMAIN   = var.cloudfront_domain
     }
   }
-  s3_bucket = var.s3_lambda_bucket
-  s3_key    = "lambda-packages/video-streamer.zip"
+  filename      = "${path.module}/../../lambda-packages/video-streamer.zip"
 }
 
 resource "aws_lambda_function" "video_list" {
@@ -40,18 +38,17 @@ resource "aws_lambda_function" "video_list" {
       DYNAMODB_TABLE_NAME = var.dynamodb_table_name
     }
   }
-  s3_bucket = var.s3_lambda_bucket
-  s3_key    = "lambda-packages/video-lister.zip"
-  timeout   = 30
+  filename      = "${path.module}/../../lambda-packages/video-lister.zip"
+  timeout       = 30
 }
 
 resource "aws_lambda_function" "s3_notification_config" {
   function_name = "${var.app_name}-S3NotificationConfig"
   role          = var.iam_roles["s3_notification_config_role"]
-  handler       = "index.lambda_handler"
+  handler       = "lambda_function.lambda_handler"
   runtime       = "python3.9"
   timeout       = 60
-  filename      = "lambda/s3_notification_config.zip" # Update path as needed
+  filename      = "${path.module}/../../lambda-packages/s3_notification_config.zip"
 }
 
 resource "aws_lambda_function" "mediaconvert_completion" {
@@ -67,7 +64,7 @@ resource "aws_lambda_function" "mediaconvert_completion" {
       CLOUDFRONT_DOMAIN   = var.cloudfront_domain
     }
   }
-  filename      = "lambda/mediaconvert_completion.zip" # Update path as needed
+  filename      = "${path.module}/../../lambda-packages/mediaconvert_completion_handler.zip"
 }
 
 resource "aws_lambda_permission" "mediaconvert_job_s3_invoke" {

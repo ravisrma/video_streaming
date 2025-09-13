@@ -75,7 +75,35 @@ resource "aws_api_gateway_method_response" "stream_get" {
     "method.response.header.Access-Control-Allow-Methods" = true
   }
 }
+resource "aws_api_gateway_method_response" "stream_options" {
+  rest_api_id = aws_api_gateway_rest_api.video_streaming_api.id
+  resource_id = aws_api_gateway_resource.video_id.id
+  http_method = aws_api_gateway_method.stream_options.http_method
+  status_code = "200"
+  response_models = {
+    "application/json" = "Empty"
+  }
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
 
+resource "aws_api_gateway_method_response" "list_options" {
+  rest_api_id = aws_api_gateway_rest_api.video_streaming_api.id
+  resource_id = aws_api_gateway_resource.list.id
+  http_method = aws_api_gateway_method.list_options.http_method
+  status_code = "200"
+  response_models = {
+    "application/json" = "Empty"
+  }
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+}
 resource "aws_api_gateway_integration_response" "stream_get" {
   rest_api_id = aws_api_gateway_rest_api.video_streaming_api.id
   resource_id = aws_api_gateway_resource.video_id.id
