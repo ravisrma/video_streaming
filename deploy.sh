@@ -4,7 +4,7 @@
 
 set -e
 
-APP_NAME="VideoStreamingApp"
+APP_NAME="videostreamingapp"
 AWS_REGION="ap-south-1"
 TERRAFORM_DIR="terraform"
 OUTPUTS_FILE="$TERRAFORM_DIR/outputs.json"
