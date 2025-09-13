@@ -1,11 +1,11 @@
 provider "aws" {
   region = var.aws_region
 }
-
+data "aws_caller_identity" "current" {}
 module "s3" {
   source = "./modules/s3"
   app_name = var.app_name
-  aws_account_id = var.aws_account_id
+  account_id = data.aws_caller_identity.current.account_id
 }
 
 module "iam" {

@@ -5,4 +5,3 @@ variable "app_name" {
   default = "videostreamingapp"
 }
 
-variable "aws_account_id" {}
