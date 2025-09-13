@@ -1,18 +1,16 @@
-resource "aws_cloudwatch_event_rule" "mediaconvert_event_rule" {
-  name        = "${var.app_name}-MediaConvertJobStatusRule"
-  description = "Capture MediaConvert job status changes"
+resource "aws_cloudwatch_event_rule" "mediaconvert_complete" {
+  name        = "${var.app_name}-mediaconvert-complete"
   event_pattern = <<EOF
 {
   "source": ["aws.mediaconvert"],
   "detail-type": ["MediaConvert Job State Change"],
   "detail": {
-    "status": ["COMPLETE", "ERROR"]
+    "status": ["COMPLETE"]
   }
 }
 EOF
 }
-
-resource "aws_cloudwatch_event_target" "mediaconvert_completion_target" {
-  rule = aws_cloudwatch_event_rule.mediaconvert_event_rule.name
-  arn  = var.lambda_arn
+resource "aws_cloudwatch_event_target" "mediaconvert_completion_lambda" {
+  rule = aws_cloudwatch_event_rule.mediaconvert_complete.name
+  arn  = var.mediaconvert_completion_lambda_arn
 }

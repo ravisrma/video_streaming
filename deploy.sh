@@ -225,14 +225,10 @@ case "${1:-deploy}" in
         update_frontend_config
         upload_frontend_to_s3
         ;;
-    package)
-        package_and_upload_lambdas
-        ;;
     *)
-        echo "Usage: $0 {deploy|frontend|package}"
+        echo "Usage: $0 {deploy|frontend}"
         echo "  deploy   - Package/upload Lambdas, update/upload frontend (default)"
         echo "  frontend - Update/upload frontend files only"
-        echo "  package  - Only package Lambda ZIPs locally"
         exit 1
         ;;
 esac

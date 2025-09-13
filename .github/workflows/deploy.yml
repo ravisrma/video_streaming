@@ -4,14 +4,14 @@ on:
   workflow_dispatch:
     inputs:
       action:
-          description: 'Action to perform'
-          required: true
-          type: choice
-          options:
-            - deploy
-            - cleanup
-            - frontend
-          default: deploy
+        description: 'Action to perform'
+        required: true
+        type: choice
+        options:
+          - deploy
+          - cleanup
+          - frontend
+        default: deploy
 
 jobs:
   terraform:
@@ -48,43 +48,77 @@ jobs:
           cd terraform
           terraform init -backend-config="bucket=${AWS_BUCKET_NAME}" -backend-config="key=${AWS_BUCKET_KEY_NAME}" -backend-config="region=${AWS_REGION}"
 
+      # Step 2: Terraform Apply (S3 bucket only)
+      - name: Terraform Apply (S3 bucket only)
+        if: ${{ github.event.inputs.action == 'deploy' }}
+        run: |
+          cd terraform
+          terraform apply -auto-approve -target=module.s3
+
+      # Step 3: Package Lambda functions
+      - name: Package Lambda functions
+        if: ${{ github.event.inputs.action == 'deploy' }}
+        run: |
+          mkdir -p lambda-packages
+          cp backend/*.py lambda-packages/
+          cd lambda-packages
+          zip -r mediaconvert_job.zip mediaconvert_job_handler.py
+          zip -r video_stream.zip video_stream_handler.py
+          zip -r video_list.zip video_list_handler.py
+          zip -r mediaconvert_completion.zip mediaconvert_completion_handler.py
+          zip -r s3_notification_config.zip s3_notification_config_handler.py
+
+      # Step 4: Upload Lambda ZIPs to S3
+      - name: Upload Lambda ZIPs to S3
+        if: ${{ github.event.inputs.action == 'deploy' }}
+        run: |
+          for file in lambda-packages/*.zip; do
+            aws s3 cp "$file" "s3://${{ secrets.AWS_BUCKET_NAME }}/lambda-packages/$(basename $file)" --region ${{ secrets.AWS_REGION }}
+          done
+
+      # Step 5: Terraform Validate
       - name: Terraform Validate
         if: ${{ github.event.inputs.action == 'deploy' }}
         run: |
           cd terraform
           terraform validate -no-color
 
-
+      # Step 6: Terraform Plan
       - name: Terraform Plan
         if: ${{ github.event.inputs.action == 'deploy' }}
         run: |
           cd terraform
           terraform plan -no-color
 
-      - name: Terraform Apply
+      # Step 7: Terraform Apply (full)
+      - name: Terraform Apply (full)
         if: ${{ github.event.inputs.action == 'deploy' }}
         run: |
           cd terraform
           terraform apply -auto-approve
 
+      # Step 8: Export Terraform Outputs
       - name: Export Terraform Outputs
         if: ${{ github.event.inputs.action == 'deploy' }}
         run: |
           cd terraform
           terraform output -json > outputs.json
 
+      # Step 9: Run artifact deployment script
       - name: Run artifact deployment script
         if: ${{ github.event.inputs.action == 'deploy' }}
         run: |
           chmod +x deploy.sh
           ./deploy.sh deploy
 
+      # Cleanup
       - name: Terraform Destroy
         if: ${{ github.event.inputs.action == 'cleanup' }}
         run: |
           cd terraform
           terraform destroy -auto-approve
 
+      # Frontend only update
       - name: Run frontend update only
         if: ${{ github.event.inputs.action == 'frontend' }}
         run: |

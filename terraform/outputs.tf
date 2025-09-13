@@ -1,24 +1,33 @@
-output "s3_buckets" {
-  value = module.s3
+output "lambda_bucket_name" {
+  value = module.s3.lambda_bucket_name
 }
-output "dynamodb_table" {
-  value = module.dynamodb
+output "upload_bucket_name" {
+  value = module.s3.upload_bucket_name
 }
-output "cognito" {
-  value = module.cognito
+output "content_bucket_name" {
+  value = module.s3.content_bucket_name
 }
-output "iam_roles" {
-  value = module.iam
+output "web_bucket_name" {
+  value = module.s3.web_bucket_name
 }
-output "lambda_functions" {
-  value = module.lambda
+output "cloudfront_domain" {
+  value = module.cloudfront.domain_name
 }
-output "apigateway" {
-  value = module.apigateway
+output "api_gateway_url" {
+  value = module.apigateway.api_gateway_url
 }
-output "cloudfront" {
-  value = module.cloudfront
+output "user_pool_id" {
+  value = module.cognito.user_pool_id
 }
-output "eventbridge" {
-  value = module.eventbridge
+output "user_pool_client_id" {
+  value = module.cognito.user_pool_client_id
+}
+output "identity_pool_id" {
+  value = module.cognito.identity_pool_id
+}
+output "dynamodb_table_name" {
+  value = module.dynamodb.table_name
+}
+output "lambda_arns" {
+  value = module.lambda.lambda_arns
 }

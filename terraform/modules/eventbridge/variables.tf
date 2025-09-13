@@ -1,2 +1,2 @@
 variable "app_name" {}
-variable "lambda_arn" {}
+variable "mediaconvert_completion_lambda_arn" {}
